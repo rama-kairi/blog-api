@@ -18,9 +18,9 @@ class GroupsIn(GroupsBase):
 
 
 class UserBase(BaseModel):
-    first_name: str
-    last_name: str
-    email: EmailStr
+    first_name: str = None
+    last_name: str = None
+    email: EmailStr = None
     phone: str = None
 
 
@@ -34,11 +34,13 @@ class UserDb(UserBase):
 
 
 class UserOut(BaseMeta, UserBase):
-    is_active: bool
-    is_superuser: bool
-    is_staff: bool
-    date_joined: datetime.datetime
-    last_login: datetime.datetime
+    is_active: bool = False
+    is_superuser: bool = False
+    is_staff: bool = False
+    date_joined: datetime.datetime = Field(
+        datetime.datetime.now(), title="Date Joined")
+    last_login: datetime.datetime = Field(
+        datetime.datetime.now(), title="Last Login")
     groups: List[GroupsBase] = []
 
     class Config:

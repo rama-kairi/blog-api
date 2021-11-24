@@ -13,6 +13,7 @@ import base64
 import imghdr
 import uuid
 import io
+from sqlalchemy import func
 
 
 oauth2_scheme = OAuth2AuthorizationCodeBearer(
@@ -71,6 +72,30 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
     # Check if the user is in user or admin group
     user_groups = [g.name for g in user.groups]
     in_group = 'user' in user_groups or 'admin' in user_groups
+    if not in_group:
+        raise HTTPException(status_code=401, detail='Not authorized')
+
+    return user
+
+
+# FastAPI get current user function
+async def get_current_admin_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    # Check if the token is in blacklist
+    is_access_token_valid = db.query(
+        models.auth.Session).filter_by(access_token=token).first()
+
+    if not is_access_token_valid:
+        raise HTTPException(status_code=401, detail='Token invalid.')
+
+    # Get the User from Token
+    user = crud.auth.auth.get_by_any(
+        db, email=crud.auth.auth.decode_jwt_token(token))
+    if not user:
+        raise credentials_exception
+
+    # Check if the user is in user or admin group
+    user_groups = [g.name for g in user.groups]
+    in_group = 'admin' in user_groups
     if not in_group:
         raise HTTPException(status_code=401, detail='Not authorized')
 
@@ -136,9 +161,9 @@ def base64_to_image(data):
 
 
 # Upload to cloudinary
-async def upload_to_cloudinary(image: io.BytesIO, filename: str):
+def upload_to_cloudinary(base64_image: str):
     # Upload the image to cloudinary
     cloudinary_response = httpx.post("https://api.cloudinary.com/v1_1/simply-jet-sa/image/upload",
-                                     files={'file': (filename, image)}, data={'upload_preset': 'simply-jet-sa'})
+                                     data={'file': base64_image, 'upload_preset': 'rugtpehh', 'timestamp': func.now()})
     cloudinary_response_json = cloudinary_response.json()
     return cloudinary_response_json.get('secure_url')

@@ -102,6 +102,12 @@ def login(bt: BackgroundTasks, user: Login, request: Request, db: Session = Depe
     }
 
 
+# User me route
+@router.get("/me", response_model=UserOut, status_code=status.HTTP_200_OK)
+def me(current_user: models.auth.User = Depends(get_current_user)):
+    return current_user
+
+
 # Logout
 @router.post("/logout", status_code=status.HTTP_200_OK)
 def logout(token: Token, db: Session = Depends(get_db), current_user: UserOut = Depends(get_current_user)):

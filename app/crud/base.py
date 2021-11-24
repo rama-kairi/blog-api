@@ -1,9 +1,12 @@
 from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
+from uuid import UUID
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.db.base_class import Base
+from fastapi import status, HTTPException
+
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -31,6 +34,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def create(self, db: Session, *, obj_in: CreateSchemaType) -> ModelType:
         obj_in_data = jsonable_encoder(obj_in)
+        print(obj_in_data)
         db_obj = self.model(**obj_in_data)  # type: ignore
         return self._update_db(db, db_obj)
 
@@ -55,11 +59,13 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self._update_db_internal(db, db_obj)
         return db_obj
 
-    def remove(self, db: Session, *, id: int) -> ModelType:
-        obj = db.query(self.model).get(id)
-        db.delete(obj)
-        db.commit()
-        return obj
+    def remove(self, db: Session, *, uid: UUID) -> ModelType:
+        obj = db.query(self.model).filter(self.model.uid == uid).first()
+        if obj:
+            return self._delete_by_arg(db, obj)
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
 
     # Get or Create Function
     def get_or_create(self, db: Session, **kwargs) -> ModelType:
@@ -97,11 +103,14 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def delete_by_any(self, db: Session, **kwargs) -> ModelType:
         instance = db.query(self.model).filter_by(**kwargs).first()
         if instance:
-            db.delete(instance)
-            db.commit()
-            return instance
+            return self._delete_by_arg(db, instance)
         else:
             return None
+
+    def _delete_by_arg(self, db, arg1):
+        db.delete(arg1)
+        db.commit()
+        return arg1
 
     def create_or_delete(self, db: Session, *, obj_create: CreateSchemaType, obj_update: UpdateSchemaType, id: str) -> ModelType:
         instance = db.query(self.model).filter(self.model.uid == id).first()

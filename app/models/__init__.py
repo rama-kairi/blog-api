@@ -1,4 +1,4 @@
-from . import auth
+from . import auth, blog
 
 '''
 Automatically add all models to __all__

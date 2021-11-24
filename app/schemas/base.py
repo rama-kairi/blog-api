@@ -4,8 +4,8 @@ from uuid import UUID
 
 
 class BaseMeta(BaseModel):
-    id: int = Field(..., title="Id")
-    uid: UUID = Field(..., title="UUID")
+    id: int = None
+    uid: UUID = None
     created_at: datetime.datetime = Field(
         datetime.datetime.now(), title="Created At")
     updated_at: datetime.datetime = Field(
