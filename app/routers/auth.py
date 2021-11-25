@@ -16,7 +16,7 @@ router = APIRouter()
 @router.post("/signup", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def signup(user_obj: UserIn, db: Session = Depends(get_db),):
     # Check if the user already exists
-    user = crud.auth.get_by_any(db, email=user_obj.email)
+    user = crud.auth.auth.get_by_any(db, email=user_obj.email)
     if user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail="Another user already registered with same email.")
@@ -33,13 +33,13 @@ def signup(user_obj: UserIn, db: Session = Depends(get_db),):
                             detail="Password and Confirm Password are not same.")
 
     # If all validations are passed, hash the password
-    hashed_password = crud.auth.hash_password(user_obj.password)
+    hashed_password = crud.auth.auth.hash_password(user_obj.password)
 
     # Create User dict
     db_user = User(**UserDb(**user_obj.dict()).dict(),
                    password=hashed_password)
     # Create a 'user' group if not created and set the user to 'user' Group
-    user_group = crud.group.get_or_create(db, name='user')
+    user_group = crud.auth.group.get_or_create(db, name='user')
 
     # Add user to 'user' group
     db_user.groups.append(user_group)
