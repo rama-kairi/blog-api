@@ -16,8 +16,7 @@ import io
 from sqlalchemy import func
 
 
-oauth2_scheme = OAuth2AuthorizationCodeBearer(
-    authorizationUrl='/api/auth/login', tokenUrl='/api/auth/login',)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/v1/auth/token')
 
 # Function to validate the password
 

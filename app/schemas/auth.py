@@ -74,3 +74,8 @@ class SessionIn(BaseModel):
     timezone: Optional[str] = None
     user_agent: Optional[str] = None
     loc: Optional[str] = None
+
+
+class Tokens(BaseModel):
+    access_token: str
+    refresh_token: str

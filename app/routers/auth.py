@@ -1,12 +1,14 @@
 from fastapi import APIRouter, status, Depends, HTTPException, Request, BackgroundTasks
 from sqlalchemy.sql.functions import func
-from app.schemas.auth import UserOut, UserIn, UserDb, Login, Token
+from app.schemas.auth import Tokens, UserOut, UserIn, UserDb, Login, Token
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models.auth import User
 from app import crud
-from .deps import validate_password, get_current_user
+from .deps import get_current_user, validate_password
 from app import models
+from fastapi.security import OAuth2PasswordRequestForm
+
 
 from app.routers import deps
 
@@ -55,9 +57,10 @@ def signup(user_obj: UserIn, db: Session = Depends(get_db),):
 
 
 # Login
-@router.post("/login", status_code=status.HTTP_200_OK)
-def login(bt: BackgroundTasks, user: Login, request: Request, db: Session = Depends(get_db)):
-    user_instance = crud.auth.auth.get_by_any(db, email=user.email)
+@router.post("/token", status_code=status.HTTP_200_OK, response_model=Tokens)
+def login(bt: BackgroundTasks, user: OAuth2PasswordRequestForm = Depends(), *, request: Request, db: Session = Depends(get_db)):
+    user_instance = crud.auth.auth.get_by_any(db, email=user.username)
+    print(user_instance)
     if not user_instance:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Incorrect email or password")
@@ -76,14 +79,14 @@ def login(bt: BackgroundTasks, user: Login, request: Request, db: Session = Depe
                             detail="Only User Can Login in this Panel.")
     # Authenticate User with email and password
     isAuthenticated = crud.auth.auth.authenticate(
-        db, email=user.email, password=user.password)
+        db, email=user.username, password=user.password)
     if not isAuthenticated:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Email or Password is incorrect.")
 
     # Generate Access & Refresh Tokens
-    access_token = crud.auth.auth.encode_jwt_token(user.email)
-    refresh_token = crud.auth.auth.encode_refresh_token(user.email)
+    access_token = crud.auth.auth.encode_jwt_token(user.username)
+    refresh_token = crud.auth.auth.encode_refresh_token(user.username)
 
     # Update Last Login
     crud.auth.auth.update(db=db, db_obj=user_instance,
@@ -94,7 +97,7 @@ def login(bt: BackgroundTasks, user: Login, request: Request, db: Session = Depe
     #     access_token, refresh_token, user.email, request, db)
 
     bt.add_task(deps.create_session,
-                access_token, refresh_token, user.email, request, db)
+                access_token, refresh_token, user.username, request, db)
 
     return {
         "access_token": access_token,

@@ -45,6 +45,18 @@ def create_blog(blog_in: schemas.blog.BlogIn, current_user: models.auth.User = D
     ## *featured_image* should be a base64 image starting with "data:image/jpeg;base64,/"
     ## *tags* will accept a list of tag *uid*
     """
+    category = crud.blog.category.get_by_any(db=db, uid=blog_in.cat_id)
+
+    if not category:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Cat Id does not exist")
+
+    for tag_uid in blog_in.tags:
+        tags = crud.blog.tags.get_by_any(db, uid=tag_uid)
+        if not tags:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Tag Id does not exist")
+
     # Upload image to cloudinary and get url
     img_url = deps.upload_to_cloudinary(blog_in.featured_image)
     # Data with Image
@@ -56,6 +68,7 @@ def create_blog(blog_in: schemas.blog.BlogIn, current_user: models.auth.User = D
         blog_ins = models.blog.Blog(**blog_in_data)
         blog_ins.tags.extend([crud.blog.tags.get_by_any(
             db, uid=tag_uid) for tag_uid in blog_in.tags])
+        blog_in.cate
         db.add(blog_ins)
         db.commit()
         db.refresh(blog_ins)
