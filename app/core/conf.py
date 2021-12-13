@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "Simplyjet Blog API"
     OPENAPI_URL_PREFIX: str = "/api/v1/openapi.json"
-    DEBUG: bool = True
+    DEBUG: bool = False
     SECRET_KEY: str = "70bfacfb6cbf80efb37f4bc12aa190c39744dead830a658cf91e3af56c732abf"
 
     # Database settings
