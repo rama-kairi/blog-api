@@ -1,5 +1,5 @@
 # Pull base image
-FROM python:3.9
+FROM python:3.9-slim
 
 # Set working directory
 WORKDIR /blog/
@@ -10,7 +10,7 @@ ENV PYTHONUNBUFFERED 1
 ENV LANG C.UTF-8
 
 # install psycopg2 dependencies
-RUN apt-get update && apt-get install -y libpq-dev libffi-dev libssl-dev libxml2-dev libxslt1-dev zlib1g-dev
+RUN apt-get update && apt-get install -y libpq-dev libffi-dev libssl-dev libxml2-dev libxslt1-dev zlib1g-dev gcc g++
 
 
 # Install dependencies
