@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, Depends, HTTPException, Request, BackgroundTasks
 from sqlalchemy.sql.functions import func
-from app.schemas.auth import Tokens, UserOut, UserIn, UserDb, Login, Token
+from app.schemas.auth import TokensResponse, UserOut, UserIn, UserDb, Login, Token
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models.auth import User
@@ -57,7 +57,7 @@ def signup(user_obj: UserIn, db: Session = Depends(get_db),):
 
 
 # Login
-@router.post("/token", status_code=status.HTTP_200_OK, response_model=Tokens)
+@router.post("/token", status_code=status.HTTP_200_OK, response_model=TokensResponse)
 def login(bt: BackgroundTasks, user: OAuth2PasswordRequestForm = Depends(), *, request: Request, db: Session = Depends(get_db)):
     user_instance = crud.auth.auth.get_by_any(db, email=user.username)
     print(user_instance)

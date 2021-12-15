@@ -76,6 +76,9 @@ class SessionIn(BaseModel):
     loc: Optional[str] = None
 
 
-class Tokens(BaseModel):
+class TokensResponse(BaseModel):
     access_token: str
     refresh_token: str
+
+    class Config:
+        orm_mode = True
