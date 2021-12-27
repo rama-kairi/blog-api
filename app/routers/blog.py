@@ -97,11 +97,10 @@ def create_blog(
     del blog_in_data["tags"]
 
     try:
-        blog_ins = models.blog.Blog(**blog_in_data, user_id=current_user.id)
+        blog_ins = models.blog.Blog(**blog_in_data, user_id=current_user.uid)
         blog_ins.tags.extend(
             [crud.blog.tags.get_by_any(db, uid=tag_uid) for tag_uid in blog_in.tags]
         )
-        blog_in.cate
         db.add(blog_ins)
         db.commit()
         db.refresh(blog_ins)
