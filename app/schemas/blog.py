@@ -44,7 +44,7 @@ class TagOut(BaseModel):
 class BlogBase(BaseModel):
     title: str = None
     body: str = None
-    featured_image: str = None
+    featured_image: Optional[AnyHttpUrl] = None
     is_featured: bool = False
 
 
@@ -56,7 +56,7 @@ class BlogIn(BlogBase):
 class blogUpdate(BaseModel):
     title: str = None
     body: str = None
-    featured_image: str = None
+    featured_image: Optional[AnyHttpUrl] = None
     is_featured: bool = False
     cat_id: UUID = None
     user_id: UUID = None
@@ -77,7 +77,7 @@ class BlogBaseOut(BaseModel):
     title: str = None
     body: str = None
     slug: str = None
-    featured_image: AnyHttpUrl
+    featured_image: Optional[AnyHttpUrl] = None
     trend_rank: int = 0
     is_featured: bool = False
 
