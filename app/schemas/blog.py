@@ -50,7 +50,6 @@ class BlogBase(BaseModel):
 
 class BlogIn(BlogBase):
     cat_id: UUID = None
-    user_id: UUID = None
     tags: List[UUID] = []
 
 
