@@ -1,6 +1,6 @@
 from fabric.api import cd, env, local, prefix, run
 
-env.hosts = ['ubuntu@159.100.241.165']
+env.hosts = ["ubuntu@159.100.241.165"]
 env.BASE_DIR = "blog-api"
 
 
