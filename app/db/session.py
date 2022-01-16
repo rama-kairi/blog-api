@@ -1,9 +1,8 @@
-from sqlalchemy.orm import Session
 from typing import Generator
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 from app.core.conf import settings
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 engine = create_engine(settings.DB_URI, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

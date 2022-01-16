@@ -1,7 +1,9 @@
 import datetime
 from typing import List, Optional
-from pydantic import BaseModel, validator, EmailStr, SecretStr, Field
 from uuid import UUID
+
+from pydantic import BaseModel, EmailStr, Field, SecretStr, validator
+
 from .base import BaseMeta
 
 
@@ -26,7 +28,7 @@ class UserBase(BaseModel):
 
 class UserIn(UserBase):
     password: str
-    confirm_password: str = Field(..., alias='confirm_password')
+    confirm_password: str = Field(..., alias="confirm_password")
 
 
 class UserDb(UserBase):
@@ -37,18 +39,16 @@ class UserOut(BaseMeta, UserBase):
     is_active: bool = False
     is_superuser: bool = False
     is_staff: bool = False
-    date_joined: datetime.datetime = Field(
-        datetime.datetime.now(), title="Date Joined")
-    last_login: datetime.datetime = Field(
-        datetime.datetime.now(), title="Last Login")
-    groups: List[GroupsBase] = []
+    date_joined: datetime.datetime = Field(datetime.datetime.now(), title="Date Joined")
+    last_login: datetime.datetime = Field(datetime.datetime.now(), title="Last Login")
+    groups: Optional[List[GroupsBase]] = []
 
     class Config:
         orm_mode = True
 
 
 class GroupsOut(BaseMeta, GroupsBase):
-    users: List[UserOut] = []
+    users: Optional[List[UserOut]] = []
 
     class Config:
         orm_mode = True

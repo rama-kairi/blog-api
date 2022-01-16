@@ -1,11 +1,12 @@
 import datetime
 from typing import List, Optional
-from pydantic import BaseModel, validator, EmailStr, SecretStr, Field
 from uuid import UUID
 
-from pydantic.networks import AnyHttpUrl
-from .base import BaseMeta
 from app import schemas
+from pydantic import BaseModel, EmailStr, Field, SecretStr, validator
+from pydantic.networks import AnyHttpUrl
+
+from .base import BaseMeta
 
 
 class CategoryIn(BaseModel):
@@ -35,7 +36,7 @@ class TagUpdate(BaseModel):
 
 
 class TagOut(BaseModel):
-    name: str
+    name: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -66,8 +67,8 @@ class blogUpdate(BaseModel):
 class BlogOut(BaseMeta, BlogBase):
     slug: Optional[str] = None
     user: schemas.auth.UserOut = {}
-    category: CategoryOutforBlog = {}
-    tags: List[TagOut] = []
+    category: Optional[CategoryOutforBlog] = {}
+    tags: Optional[List[TagOut]] = []
 
     class Config:
         orm_mode = True
@@ -86,7 +87,7 @@ class BlogBaseOut(BaseModel):
 
 
 class CategoryOut(CategoryIn, BaseMeta):
-    blogs: List[BlogBaseOut] = []
+    blogs: Optional[List[BlogBaseOut]] = []
 
     class Config:
         orm_mode = True

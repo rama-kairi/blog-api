@@ -15,16 +15,12 @@ class Settings((BaseSettings)):
     DB_USER: str = "postgres"
     DB_PASSWORD: str = "postgres"
     DB_DATABASE: str = "simplyjet_blog"
-    DB_URI: str = (
-        f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_DATABASE}"
-    )
+    DB_URI: str = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_DATABASE}"
 
     # Create a PostgresDsn object
 
     # Security settings
-    JWT_SECRET_KEY: str = (
-        "c2d7ebbb6274a06756ee717984c9e3195b7f05ee481013154c4c4de7f8333aaa"
-    )
+    JWT_SECRET_KEY: str = "c2d7ebbb6274a06756ee717984c9e3195b7f05ee481013154c4c4de7f8333aaa"
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRATION_MINUTE: int = 15  # 15 minutes
     JWT_REFRESH_TOKEN_EXPIRATION_MINUTE: int = 60 * 24 * 3  # 3 days
